@@ -24,6 +24,11 @@ Dim $AreaList
 Dim $areaID
 Dim $running = 0
 Dim $pauseTime = 150
+Dim $eat = 1
+Dim $drink = 1
+Dim $max_alcohol = 19
+Dim $craft_quantity = 5
+Dim $craft_id = 3006 ;noodles
 
 GUIInit()
 
@@ -110,8 +115,8 @@ Func Summon()
    $skillForm = _IEFormGetObjByName ($mainpane, "skillform")
    $sQuery = _IEFormElementGetObjByName ($skillForm, "whichskill")
    $qQuery = _IEFormElementGetObjByName ($skillForm, "quantity")
-   _IEFormElementSetValue ($sQuery,3006);noodles id
-   _IEFormElementSetValue ($qQuery,3)
+   _IEFormElementSetValue ($sQuery,$craft_id)
+   _IEFormElementSetValue ($qQuery,$craft_quantity)
    _IEFormSubmit($skillForm)
    _IELoadWait($mainpane)
    Sleep($pauseTime)
@@ -123,15 +128,19 @@ Func Cook()
    Sleep($pauseTime)
    $cookForm = _IEFormGetObjByName ($mainpane, "master")
    $qQuery = _IEFormElementGetObjByName ($cookForm, "qty")
-   _IEFormElementSetValue ($qQuery,3)
+   _IEFormElementSetValue ($qQuery, $craft_quantity)
    _IEFormSubmit($cookForm)
    Sleep($pauseTime)
 EndFunc
 
 Func Consume()
    _IENavigate($mainpane, $rootURL & "inventory.php?which=1")
-   Sleep($pauseTime)
-   ;gnoll lo mein specifically <a href="inv_eat.php?pwd=c7ddd0ab0a08aa42a643e222f26bae10&amp;which=1&amp;whichitem=1589">[eat]</a>
+   For $i = 0 To $max_alcohol - 1
+	  _IELinkClickByText($mainpane, "[drink]", $drink)
+	  Sleep($pauseTime)
+	  _IELinkClickByText($mainpane, "[eat]", $eat)
+	  Sleep($pauseTime)
+   Next
 EndFunc
 
 Func IE3ErrorHandler()
